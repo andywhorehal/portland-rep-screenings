@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portland Repertory Screenings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Portland, Oregon</p>
+        <h1>Repertory Screenings Calendar</h1>
+        <p class="lede">
+          A fast, simple overview of repertory and curated film screenings in Portland.
+        </p>
+        <div class="hero-meta">
+          <span id="last-updated">Loading data…</span>
+          <span class="dot">•</span>
+          <span id="data-note">Static data for now</span>
+        </div>
+      </div>
+      <div class="hero-orb"></div>
+    </header>
+
+    <main class="layout">
+      <section class="controls">
+        <div class="control-group">
+          <label for="search">Search</label>
+          <input id="search" type="search" placeholder="Film, series, 35mm, director…" />
+        </div>
+
+        <div class="control-group">
+          <label>Date range</label>
+          <div class="date-range">
+            <input id="start-date" type="date" />
+            <span>to</span>
+            <input id="end-date" type="date" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>Venues</label>
+          <div id="venue-filters" class="chip-grid"></div>
+        </div>
+
+        <div class="control-group">
+          <label>Tags</label>
+          <div id="tag-filters" class="chip-grid"></div>
+        </div>
+
+        <div class="control-group view-toggle">
+          <label>View</label>
+          <div class="toggle">
+            <button id="view-calendar" class="active" type="button">Calendar</button>
+            <button id="view-list" type="button">List</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div id="sample-banner" class="banner hidden">
+          You are viewing sample data only. Replace with real listings when you wire up scraping.
+        </div>
+
+        <section id="calendar-view" class="panel">
+          <div class="panel-header">
+            <div class="month-nav">
+              <button id="prev-month" type="button">←</button>
+              <h2 id="month-label">Month</h2>
+              <button id="next-month" type="button">→</button>
+            </div>
+            <div class="legend">
+              <span class="legend-chip">● Repertory / curated</span>
+              <span class="legend-chip">● Filtered</span>
+            </div>
+          </div>
+          <div class="calendar" id="calendar-grid"></div>
+          <div class="day-detail" id="day-detail">
+            <h3 id="day-title">Selected day</h3>
+            <div id="day-events" class="day-events"></div>
+          </div>
+        </section>
+
+        <section id="list-view" class="panel hidden">
+          <div class="panel-header">
+            <h2>Screenings List</h2>
+            <p id="list-count">0 screenings</p>
+          </div>
+          <div id="list-results" class="list-results"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        Sources: Hollywood Theatre, The Cinemagic Theater, Clinton Street Theater, PAM CUT,
+        Tomorrow Theater, Cinema 21.
+      </p>
+      <p>
+        Build note: This is a static demo. Wire up a scraper or manual updates to make it live.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

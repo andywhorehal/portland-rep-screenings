@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "generatedAt": "2026-02-08",
+    "timezone": "America/Los_Angeles",
+    "notes": "Sample data for UI development. Replace with real listings when scraping or entering events."
+  },
+  "venues": [
+    {
+      "id": "hollywood",
+      "name": "Hollywood Theatre",
+      "url": "https://hollywoodtheatre.org",
+      "location": "Portland, OR"
+    },
+    {
+      "id": "cinemagic",
+      "name": "The Cinemagic Theater",
+      "url": "https://www.thecinemagictheater.com/",
+      "location": "Portland, OR"
+    },
+    {
+      "id": "clinton",
+      "name": "Clinton Street Theater",
+      "url": "https://cstpdx.com/",
+      "location": "Portland, OR"
+    },
+    {
+      "id": "pamcut",
+      "name": "PAM CUT @ Portland Art Museum (Whitsell Auditorium)",
+      "url": "https://portlandartmuseum.org/whitsell/",
+      "location": "Portland, OR"
+    },
+    {
+      "id": "tomorrow",
+      "name": "Tomorrow Theater",
+      "url": "https://tomorrowtheater.org/",
+      "location": "Portland, OR"
+    },
+    {
+      "id": "cinema21",
+      "name": "Cinema 21",
+      "url": "https://www.pickcinema.com/theater/portland/cinema-21-theatre/",
+      "location": "Portland, OR"
+    }
+  ],
+  "events": [
+    {
+      "id": "sample-1",
+      "title": "Sample: 35mm Friday Night",
+      "start": "2026-02-13T19:30:00-08:00",
+      "end": "2026-02-13T21:30:00-08:00",
+      "venueId": "hollywood",
+      "tags": ["35mm", "repertory"],
+      "ticketUrl": "https://hollywoodtheatre.org",
+      "source": "sample",
+      "isSample": true
+    },
+    {
+      "id": "sample-2",
+      "title": "Sample: Late Night Cult Classic",
+      "start": "2026-02-14T22:00:00-08:00",
+      "end": "2026-02-15T00:05:00-08:00",
+      "venueId": "clinton",
+      "tags": ["cult", "late-night"],
+      "ticketUrl": "https://cstpdx.com/",
+      "source": "sample",
+      "isSample": true
+    },
+    {
+      "id": "sample-3",
+      "title": "Sample: PAM CUT Curated Screening",
+      "start": "2026-02-15T18:00:00-08:00",
+      "end": "2026-02-15T20:00:00-08:00",
+      "venueId": "pamcut",
+      "tags": ["curated", "museum"],
+      "ticketUrl": "https://portlandartmuseum.org/whitsell/",
+      "source": "sample",
+      "isSample": true
+    },
+    {
+      "id": "sample-4",
+      "title": "Sample: Double Feature Night",
+      "start": "2026-02-20T19:00:00-08:00",
+      "end": "2026-02-20T23:00:00-08:00",
+      "venueId": "cinemagic",
+      "tags": ["double-feature"],
+      "ticketUrl": "https://www.thecinemagictheater.com/",
+      "source": "sample",
+      "isSample": true
+    },
+    {
+      "id": "sample-5",
+      "title": "Sample: Series Spotlight",
+      "start": "2026-02-21T19:30:00-08:00",
+      "end": "2026-02-21T21:30:00-08:00",
+      "venueId": "tomorrow",
+      "tags": ["series"],
+      "ticketUrl": "https://tomorrowtheater.org/",
+      "source": "sample",
+      "isSample": true
+    },
+    {
+      "id": "sample-6",
+      "title": "Sample: Revival Screening",
+      "start": "2026-02-22T18:30:00-08:00",
+      "end": "2026-02-22T20:30:00-08:00",
+      "venueId": "cinema21",
+      "tags": ["revival"],
+      "ticketUrl": "https://www.pickcinema.com/theater/portland/cinema-21-theatre/",
+      "source": "sample",
+      "isSample": true
+    }
+  ]
+}
