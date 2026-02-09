@@ -47,7 +47,7 @@ const VENUES = [
     id: "cinema21",
     name: "Cinema 21",
     url: "https://www.pickcinema.com/theater/portland/cinema-21-theatre/",
-    source: "https://www.pickcinema.com/theater/portland/cinema-21-theatre/",
+    source: "https://www.moviefone.com/showtimes/theater/cinema-21-portland/gUws5kMI6dQ6NeZgLj16S/",
     parser: parseCinema21
   }
 ];
@@ -349,27 +349,36 @@ function parseTomorrow(html, venue) {
 function parseCinema21(html, venue) {
   const $ = load(html);
   const events = [];
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const year = now.getFullYear();
 
-  $(".showtime, .showtimes, .showtime-list").each((_, el) => {
-    const container = $(el).closest(".movie, .movie-card, .film, .showtimes-wrap");
-    const title = normalizeText(container.find("h1, h2, h3").first().text());
+  let currentTitle = null;
+
+  $("h3, p, div").each((_, el) => {
+    const tag = el.tagName.toLowerCase();
     const text = normalizeText($(el).text());
+    if (!text) return;
+
+    if (tag === "h3") {
+      currentTitle = text.replace(/\s*\(\d{4}\)\s*$/, "");
+      return;
+    }
+
+    if (!currentTitle) return;
+
     const times = parseTimes(text);
-    if (!title || times.length === 0) return;
-
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    const year = now.getFullYear();
-
-    times.forEach((time) => {
-      events.push({
-        title,
-        start: buildIsoDate({ year, month, day, ...time }),
-        tags: ["today"],
-        url: venue.source
+    if (times.length) {
+      times.forEach((time) => {
+        events.push({
+          title: currentTitle,
+          start: buildIsoDate({ year, month, day, ...time }),
+          tags: ["moviefone"],
+          url: venue.source
+        });
       });
-    });
+    }
   });
 
   return events;
