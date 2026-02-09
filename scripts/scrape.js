@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import cheerio from "cheerio";
+import { load } from "cheerio";
 
 const OUTPUT_PATH = path.resolve("data/events.json");
 const TIMEZONE = "America/Los_Angeles";
@@ -174,7 +174,7 @@ function normalizeText(value) {
 }
 
 function parseHollywood(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const main = $("main, #main, .site-content").first();
   const lines = main
     .text()
@@ -211,7 +211,7 @@ function parseHollywood(html, venue) {
 }
 
 function parseCinemagic(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const blocks = [];
   $("main h1, main h2, main h3, main h4, main p, main li").each((_, el) => {
     const tag = el.tagName.toLowerCase();
@@ -247,7 +247,7 @@ function parseCinemagic(html, venue) {
 }
 
 function parseClinton(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const events = [];
 
   const listItems = $(".tribe-events-calendar-list__event, .tribe-events-pro-photo__event");
@@ -270,7 +270,7 @@ function parseClinton(html, venue) {
 }
 
 function parsePamCut(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const events = [];
 
   extractJsonLdEvents($).forEach((event) => {
@@ -291,7 +291,7 @@ function parsePamCut(html, venue) {
 }
 
 function parseTomorrow(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const events = [];
 
   extractJsonLdEvents($).forEach((event) => {
@@ -302,7 +302,7 @@ function parseTomorrow(html, venue) {
 }
 
 function parseCinema21(html, venue) {
-  const $ = cheerio.load(html);
+  const $ = load(html);
   const events = [];
 
   $(".showtime, .showtimes, .showtime-list").each((_, el) => {
