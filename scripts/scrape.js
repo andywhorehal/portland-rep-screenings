@@ -83,7 +83,9 @@ function pad2(number) {
 function parseMonthDay(text) {
   const match = text
     .toLowerCase()
-    .match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})/i);
+    .match(
+      /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?/i
+    );
   if (!match) return null;
   const month = MONTHS[match[1]];
   const day = Number(match[2]);
@@ -191,18 +193,34 @@ function parseHollywood(html, venue) {
   slice.forEach((line) => {
     const date = parseMonthDay(line);
     if (date) {
+      const times = parseTimes(line);
       if (currentTitle) {
         const year = resolveYear(date.month, date.day);
-        events.push({
-          title: currentTitle,
-          start: buildIsoDate({ year, ...date }),
-          tags: ["time-unknown"],
-          url: venue.source
-        });
+        if (times.length) {
+          times.forEach((time) => {
+            events.push({
+              title: currentTitle,
+              start: buildIsoDate({ year, ...date, ...time }),
+              tags: [],
+              url: venue.source
+            });
+          });
+        } else {
+          events.push({
+            title: currentTitle,
+            start: buildIsoDate({ year, ...date }),
+            tags: ["time-unknown"],
+            url: venue.source
+          });
+        }
       }
       return;
     }
-    if (line.length > 2 && !/^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i.test(line)) {
+    if (
+      line.length > 2 &&
+      !/^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i.test(line) &&
+      !/^(buy tickets|more info|tickets|now playing)$/i.test(line)
+    ) {
       currentTitle = line;
     }
   });
