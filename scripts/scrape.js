@@ -178,50 +178,59 @@ function normalizeText(value) {
 function parseHollywood(html, venue) {
   const $ = load(html);
   const main = $("main, #main, .site-content").first();
-  const lines = main
-    .text()
-    .split("\n")
-    .map((line) => normalizeText(line))
-    .filter(Boolean);
-
-  const startIndex = lines.findIndex((line) => line.toLowerCase() === "showtimes");
-  const endIndex = lines.findIndex((line) => line.toLowerCase() === "mission");
-  const slice = lines.slice(startIndex + 1, endIndex > 0 ? endIndex : undefined);
-
   const events = [];
+  let capture = false;
   let currentTitle = null;
-  slice.forEach((line) => {
-    const date = parseMonthDay(line);
-    if (date) {
-      const times = parseTimes(line);
-      if (currentTitle) {
-        const year = resolveYear(date.month, date.day);
-        if (times.length) {
-          times.forEach((time) => {
-            events.push({
-              title: currentTitle,
-              start: buildIsoDate({ year, ...date, ...time }),
-              tags: [],
-              url: venue.source
-            });
-          });
-        } else {
-          events.push({
-            title: currentTitle,
-            start: buildIsoDate({ year, ...date }),
-            tags: ["time-unknown"],
-            url: venue.source
-          });
-        }
+  let currentUrl = venue.source;
+
+  const stopPattern = /^(portland’s premier|our mission|sign up for our newsletter)/i;
+
+  main.find("h1, h2, h3, h4, p, a, li").each((_, el) => {
+    const tag = el.tagName.toLowerCase();
+    const text = normalizeText($(el).text());
+
+    if (!text) return;
+
+    if (/^showtimes$/i.test(text)) {
+      capture = true;
+      return;
+    }
+
+    if (!capture) return;
+    if (stopPattern.test(text)) {
+      capture = false;
+      return;
+    }
+
+    if (tag === "a" && text.length > 2) {
+      if (!/^(buy tickets|more info|tickets|now playing)$/i.test(text)) {
+        currentTitle = text;
+        currentUrl = $(el).attr("href") || venue.source;
       }
       return;
     }
-    if (
-      line.length > 2 &&
-      !/^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i.test(line) &&
-      !/^(buy tickets|more info|tickets|now playing)$/i.test(line)
-    ) {
-      currentTitle = line;
+
+    const date = parseMonthDay(text);
+    if (date && currentTitle) {
+      const times = parseTimes(text);
+      const year = resolveYear(date.month, date.day);
+      if (times.length) {
+        times.forEach((time) => {
+          events.push({
+            title: currentTitle,
+            start: buildIsoDate({ year, ...date, ...time }),
+            tags: [],
+            url: currentUrl
+          });
+        });
+      } else {
+        events.push({
+          title: currentTitle,
+          start: buildIsoDate({ year, ...date }),
+          tags: ["time-unknown"],
+          url: currentUrl
+        });
+      }
     }
   });
 
