@@ -175,64 +175,82 @@ function normalizeText(value) {
   return value.replace(/\s+/g, " ").trim();
 }
 
-function parseHollywood(html, venue) {
+async function parseHollywood(html, venue) {
   const $ = load(html);
   const main = $("main, #main, .site-content").first();
+  const showLinks = new Map();
+
+  main.find("a").each((_, el) => {
+    const href = $(el).attr("href");
+    if (!href || !href.includes("/show/")) return;
+    const title = normalizeText($(el).text());
+    if (!title) return;
+    const url = href.startsWith("http") ? href : new URL(href, venue.url).toString();
+    showLinks.set(url, title);
+  });
+
   const events = [];
-  let capture = false;
-  let currentTitle = null;
-  let currentUrl = venue.source;
+  for (const [url, title] of showLinks.entries()) {
+    try {
+      const showHtml = await fetchHtml(url);
+      const showEvents = parseHollywoodShowPage(showHtml, { title, url });
+      showEvents.forEach((event) => events.push(event));
+    } catch (error) {
+      continue;
+    }
+  }
 
-  const stopPattern = /^(portland’s premier|our mission|sign up for our newsletter)/i;
+  return events;
+}
 
-  main.find("h1, h2, h3, h4, p, a, li").each((_, el) => {
-    const tag = el.tagName.toLowerCase();
-    const text = normalizeText($(el).text());
+function parseHollywoodShowPage(html, show) {
+  const $ = load(html);
+  const events = [];
+  const showtimesHeader = $("h2")
+    .filter((_, el) => normalizeText($(el).text()).toLowerCase() === "showtimes")
+    .first();
 
-    if (!text) return;
+  if (!showtimesHeader.length) {
+    return events;
+  }
 
-    if (/^showtimes$/i.test(text)) {
-      capture = true;
-      return;
+  let currentDate = null;
+  let node = showtimesHeader.next();
+
+  while (node.length) {
+    if (node.is("h2")) break;
+
+    const text = normalizeText(node.text());
+    if (node.is("h3")) {
+      currentDate = parseMonthDay(text);
+      node = node.next();
+      continue;
     }
 
-    if (!capture) return;
-    if (stopPattern.test(text)) {
-      capture = false;
-      return;
-    }
-
-    if (tag === "a" && text.length > 2) {
-      if (!/^(buy tickets|more info|tickets|now playing)$/i.test(text)) {
-        currentTitle = text;
-        currentUrl = $(el).attr("href") || venue.source;
-      }
-      return;
-    }
-
-    const date = parseMonthDay(text);
-    if (date && currentTitle) {
+    if (currentDate) {
       const times = parseTimes(text);
-      const year = resolveYear(date.month, date.day);
+      const year = resolveYear(currentDate.month, currentDate.day);
       if (times.length) {
         times.forEach((time) => {
           events.push({
-            title: currentTitle,
-            start: buildIsoDate({ year, ...date, ...time }),
+            title: show.title,
+            start: buildIsoDate({ year, ...currentDate, ...time }),
             tags: [],
-            url: currentUrl
+            url: show.url
           });
         });
-      } else {
+      } else if (text) {
         events.push({
-          title: currentTitle,
-          start: buildIsoDate({ year, ...date }),
+          title: show.title,
+          start: buildIsoDate({ year, ...currentDate }),
           tags: ["time-unknown"],
-          url: currentUrl
+          url: show.url
         });
       }
     }
-  });
+
+    node = node.next();
+  }
 
   return events;
 }
@@ -395,7 +413,7 @@ async function run() {
   for (const venue of VENUES) {
     try {
       const html = await fetchHtml(venue.source);
-      const rawEvents = venue.parser(html, venue) || [];
+      const rawEvents = (await venue.parser(html, venue)) || [];
       rawEvents.forEach((event) => allEvents.push(normalizeEvent(venue.id, event)));
     } catch (error) {
       warnings.push(`${venue.id}: ${error.message}`);
